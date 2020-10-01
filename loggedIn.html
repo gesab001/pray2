@@ -67,7 +67,7 @@ limitations under the License.
  <script type="text/javascript">
 	 var prayer_list_container = document.getElementById("prayer_list");
 	 document.getElementById("userinfo").innerHTML = "test";
-
+     var prayer = document.getElementById("newprayer");
 	  // Initialize Firebase
 	  firebase.initializeApp(firebaseConfig);
 	  // Create a root reference
@@ -81,19 +81,24 @@ limitations under the License.
 	  }else{
 		  document.getElementById("container").style.display = "block";
 		  document.getElementById("userProfile").innerHTML = JSON.stringify(user);
+		  getPrayers();
 	  }
 	  function submit(){
 		  var address = document.getElementById("address").innerHTML;
   		  var sign = document.getElementById("sign").innerHTML;
-		  var prayer = document.getElementById("newprayer").value;
-		  var message = address + ", " + prayer + ", " + sign;
-		      if (user!=null){
-					alert(user.email);
-					addToDatabase(message);
-			  }else{
-				  alert("please log in");
-				  window.location = "firebase.html";
-			  }
+		  var newprayer = prayer.value;
+		  if (newprayer.length>0){
+			  var message = address + ", " + newprayer + ", " + sign;
+				  if (user!=null){
+						alert(user.email);
+						addToDatabase(message);
+				  }else{
+					  alert("please log in");
+					  window.location = "index.html";
+				  }
+		  }else{
+			  alert("please enter your request");
+		  }
 
 	  }
 	  
@@ -125,6 +130,8 @@ limitations under the License.
 						  var element = document.createElement("P");
 						  element.innerHTML = message;
 					      prayer_list_container.append(element);
+					      prayer.value = "";
+					      
 
 			})
 			.catch(function(error) {
@@ -140,7 +147,7 @@ limitations under the License.
 				querySnapshot.forEach((doc) => {
 					console.log(`${doc.id} => ${doc.data().message}`);
 					var element = document.createElement("P");
-					element.innerHTML = `${doc.data().message}`;
+					element.innerHTML = "another prayer";
 					prayer_list_container.append(element);
 					
 				});
@@ -202,7 +209,7 @@ limitations under the License.
 		  localStorage.removeItem("user");
 		  alert(localStorage.getItem("user"));
 		  alert("signout successful");
-          window.location = 'firebase.html';
+          window.location = 'index.html';
           
           
 		}).catch(function(error) {
