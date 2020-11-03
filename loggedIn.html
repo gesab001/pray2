@@ -51,6 +51,11 @@ limitations under the License.
 <h1 id="address">Dear heavenly Father</h1>
 <textarea id="newprayer"></textarea>
 <h1 id="sign">in Jesus' name, Amen.</h1>
+<select id="messageType">
+<option value="private">private</option>
+<option value="friends">friends</option>
+<option value="public">public</option>
+</select>
 <button onclick="submit()">submit</button>
 <button onclick="downloadFile()">download</button>
 <button onclick="addToDatabase()">database</button>
@@ -84,6 +89,8 @@ limitations under the License.
 		  getPrayers();
 	  }
 	  function submit(){
+	      var messageType = document.getElementById("messageType").value;
+	      alert(messageType);
 		  var address = document.getElementById("address").innerHTML;
   		  var sign = document.getElementById("sign").innerHTML;
 		  var newprayer = prayer.value;
@@ -91,7 +98,16 @@ limitations under the License.
 			  var message = address + ", " + newprayer + ", " + sign;
 				  if (user!=null){
 						alert(user.email);
-						addToDatabase(message);
+						if (messageType=="private"){
+						   alert(messageType);
+						   addToDatabase(message);
+						}if (messageType=="public"){
+						   alert(messageType);
+						   addToDatabasePublic(message);
+						}if (messageType=="friends"){
+						   alert(messageType);
+						   addToDatabaseFriends(message);
+						}
 				  }else{
 					  alert("please log in");
 					  window.location = "index.html";
@@ -119,7 +135,59 @@ limitations under the License.
 	  
 
 	  function addToDatabase(message){
+	  
 	   db.collection("rooms").doc("prayer").collection("private").doc(user.email).collection("messages").add({
+              author: user.email,
+			  message: message,
+			  date: Date.now()
+
+			})
+			.then(function(event) {
+				console.log("Document written with ID: ", event);
+						  alert("database");
+						  var element = document.createElement("P");
+						  element.innerHTML = message;
+					      prayer_list_container.append(element);
+					      prayer.value = "";
+					      
+
+			})
+			.catch(function(error) {
+				console.error("Error adding document: ", error);
+										  alert("error");
+
+			});
+	  }
+
+   function addToDatabasePublic(message){
+
+	   db.collection("rooms").doc("prayer").collection("public").add({
+			  author: user.email,
+			  message: message,
+			  date: Date.now()
+
+			})
+			.then(function(event) {
+				console.log("Document written with ID: ", event);
+						  alert("database");
+						  var element = document.createElement("P");
+						  element.innerHTML = message;
+					      prayer_list_container.append(element);
+					      prayer.value = "";
+					      
+
+			})
+			.catch(function(error) {
+				console.error("Error adding document: ", error);
+										  alert("error");
+
+			});
+	  }
+	
+	  function addToDatabaseFriends(message){
+	  
+	   db.collection("rooms").doc("prayer").collection("friends").doc(user.email).collection("messages").add({
+              author: user.email,
 			  message: message,
 			  date: Date.now()
 
