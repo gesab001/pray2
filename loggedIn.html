@@ -135,13 +135,14 @@ limitations under the License.
 	  
 
 	  function addToDatabase(message){
-	  
-	   db.collection("rooms").doc("prayer").collection("private").doc(user.email).collection("messages").add({
+	   alert(user.uid);
+	   db.collection("rooms").doc("prayer").collection("private").doc(user.uid).collection("messages").add({
               author: user.email,
+			  userId: user.uid,
 			  message: message,
 			  date: Date.now()
 
-			})
+			}) 
 			.then(function(event) {
 				console.log("Document written with ID: ", event);
 						  alert("database");
@@ -163,6 +164,7 @@ limitations under the License.
 
 	   db.collection("rooms").doc("prayer").collection("public").add({
 			  author: user.email,
+			  userId: user.uid,
 			  message: message,
 			  date: Date.now()
 
