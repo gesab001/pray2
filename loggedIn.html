@@ -88,7 +88,7 @@ limitations under the License.
       getPublicPrayers();
 	  var user = JSON.parse(localStorage.getItem("user"));
 	  if(user==null){
-		  alert("please log in");
+		  ////alert("please log in");
 				  window.location = "index.html";
 	  }else{
 		  document.getElementById("container").style.display = "block";
@@ -97,30 +97,30 @@ limitations under the License.
 	  }
 	  function submit(){
 	      var messageType = document.getElementById("messageType").value;
-	      alert(messageType);
+	      ////alert(messageType);
 		  var address = document.getElementById("address").innerHTML;
   		  var sign = document.getElementById("sign").innerHTML;
 		  var newprayer = prayer.value;
 		  if (newprayer.length>0){
 			  var message = address + ", " + newprayer + ", " + sign;
 				  if (user!=null){
-						alert(user.email);
+						//alert(user.email);
 						if (messageType=="private"){
-						   alert(messageType);
+						   //alert(messageType);
 						   addToDatabase(message);
 						}if (messageType=="public"){
-						   alert(messageType);
+						   //alert(messageType);
 						   addToDatabasePublic(message);
 						}if (messageType=="friends"){
-						   alert(messageType);
+						   //alert(messageType);
 						   addToDatabaseFriends(message);
 						}
 				  }else{
-					  alert("please log in");
+					  //alert("please log in");
 					  window.location = "index.html";
 				  }
 		  }else{
-			  alert("please enter your request");
+			  //alert("please enter your request");
 		  }
 
 	  }
@@ -134,7 +134,7 @@ limitations under the License.
             var message = JSON.stringify(jsondata);
 			var ref = storageRef.child('prayerboard.json');
 			ref.putString(message).then(function(snapshot) {
-			  alert('Uploaded a raw string! ' + message);
+			  //alert('Uploaded a raw string! ' + message);
 			});
 
 
@@ -142,7 +142,7 @@ limitations under the License.
 	  
 
 	  function addToDatabase(message){
-	   alert(user.uid);
+	   //alert(user.uid);
 	   var docRef = db.collection("rooms").doc("prayer").collection("private").doc(user.uid).collection("messages");
 	   docRef.add({
               author: user.email,
@@ -152,14 +152,14 @@ limitations under the License.
 
 			}) 
 			.then(function(doc) {
-				alert("Document written with ID: " + doc.id);
+				//alert("Document written with ID: " + doc.id);
 						  showItem(docRef, message, user.uid, doc.id);
 					      
 
 			})
 			.catch(function(error) {
 				console.error("Error adding document: ", error);
-										  alert("error");
+										  //alert("error");
 
 			});
 	  }
@@ -176,7 +176,7 @@ limitations under the License.
 			})
 			.then(function(doc) {
 				console.log("Document written with ID: " + doc.id);
-						  alert("database");
+						  //alert("database");
 				          showItem(docRef, message, user.uid, doc.id);
 
 					      
@@ -184,7 +184,7 @@ limitations under the License.
 			})
 			.catch(function(error) {
 				console.error("Error adding document: ", error);
-										  alert("error");
+										  //alert("error");
 
 			});
 	  }
@@ -199,7 +199,7 @@ limitations under the License.
 			})
 			.then(function(event) {
 				console.log("Document written with ID: ", event);
-						  alert("database");
+						  //alert("database");
 						  var element = document.createElement("P");
 						  element.innerHTML = message;
 					      prayer_list_container.append(element);
@@ -209,7 +209,7 @@ limitations under the License.
 			})
 			.catch(function(error) {
 				console.error("Error adding document: ", error);
-										  alert("error");
+										  //alert("error");
 
 			});
 	  }
@@ -219,7 +219,7 @@ limitations under the License.
 				querySnapshot.forEach((doc) => {
 					console.log(`${doc.id} => ${doc.data().message}`);
 					var message = doc.data().message;
-					var id = doc.data().id;
+					var id = doc.id;
 					var userId = doc.data().userId;
 					showItem(docRef, message, userId, id);
 					
@@ -234,8 +234,9 @@ limitations under the License.
 			querySnapshot.forEach(doc => {
 				console.log(doc.id, " => ", doc.data());
 				var message = doc.data().message;
-				var id = doc.data().id;
+				var id = doc.id;
 				var userId = doc.data().userId;
+			
 				showItem(docRef, message, userId, id);
 				
 			});
@@ -250,7 +251,7 @@ limitations under the License.
 		elementDiv.className = "prayerItem";
 		elementDiv.setAttribute("id", id);
 		elementP = document.createElement("P");
-		elementP.innerHTML = message;
+		elementP.innerHTML = message + id;
 		elementDiv.append(elementP);
 		elementDiv.onclick = function () {
 		var deleteItem = confirm("delete?");
@@ -258,7 +259,7 @@ limitations under the License.
 		if(deleteItem){
 		      alert("userId: " + userId + " docId: " + id);
               if (userId==user.uid){
-				 alert("deleted: " + id);
+				 //alert("deleted: " + id);
 				 docRef.doc(id).delete().then(function() {
 					console.log("Document successfully deleted!");
 				}).catch(function(error) {
@@ -267,7 +268,7 @@ limitations under the License.
 				document.getElementById(id).remove();
 				};
 			  }else{
-			     alert("you are not the author");
+			     //alert("you are not the author");
 			  }
 			
 		}
@@ -284,13 +285,13 @@ limitations under the License.
 				var elementDiv = document.createElement("DIV");
 				elementDiv.className = "prayerItem";
                 elementDiv.setAttribute("id", doc.id);
- elementP = document.createElement("P");
+				elementP = document.createElement("P");
 				elementP.innerHTML = doc.data().message;
 				elementButton = document.createElement("BUTTON");
 				elementDiv.append(elementP);
 				elementDiv.append(elementButton);
 				elementDiv.onclick = function () {
-				    alert("test");
+				    //alert("test");
 				};
 				prayer_list_container.append(elementDiv);
 			});
@@ -300,24 +301,24 @@ limitations under the License.
 	  }
 	  
 	  function test(){
-	     alert("delete");
+	     //alert("delete");
 	  }
 	  function downloadFile(){
-		  alert("download");
+		  //alert("download");
 		  // Create a reference to the file we want to download
 			var starsRef = storageRef.child('prayerboard.json');
 
 			// Get the download URL
 			starsRef.getDownloadURL().then(function(url) {
 			  // Insert url into an <img> tag to "download"
-			  alert(url);
+			  //alert(url);
 			  document.getElementById("url").href = url;
 			  // This can be downloaded directly:
 			  var xhr = new XMLHttpRequest();
 			  xhr.responseType = 'json';
 			  xhr.onload = function(event) {
 				var jsondata = xhr.response;
-				 alert(jsondata);
+				 //alert(jsondata);
 			  };
 			  xhr.open('GET', url);
 			  xhr.send();
@@ -333,7 +334,7 @@ limitations under the License.
 
 				case 'storage/unauthorized':
 				  // User doesn't have permission to access the object
-				  alert("no permission");
+				  //alert("no permission");
 				  break;
 
 				case 'storage/canceled':
@@ -356,13 +357,13 @@ limitations under the License.
 	  firebase.auth().signOut().then(function() {
 		  // Sign-out successful.
 		  localStorage.removeItem("user");
-		  alert(localStorage.getItem("user"));
-		  alert("signout successful");
+		  //alert(localStorage.getItem("user"));
+		  //alert("signout successful");
           window.location = 'index.html';
           
           
 		}).catch(function(error) {
-		  alert(error);
+		  //alert(error);
 		}); 
    }
 
