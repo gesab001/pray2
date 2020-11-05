@@ -69,7 +69,14 @@ limitations under the License.
 <button onclick="getPrivatePrayers()">get private prayers</button>
 
 <a id="url" href="">url</a>
+
+<h1>Private</h1>
 <div id="prayer_list">
+
+</div>
+
+<h1>Public</h1>
+<div id="prayer_list_public">
 
 </div>
 </div>
@@ -78,6 +85,8 @@ limitations under the License.
 </body>
  <script type="text/javascript">
 	 var prayer_list_container = document.getElementById("prayer_list");
+	 var prayer_list_container_public = document.getElementById("prayer_list_public");
+
 	 document.getElementById("userinfo").innerHTML = "test";
      var prayer = document.getElementById("newprayer");
 	 var prayerItems = [];
@@ -143,17 +152,18 @@ limitations under the License.
 
 	  function addToDatabase(message){
 	   //alert(user.uid);
+       var dateNow = Date.now();
 	   var docRef = db.collection("rooms").doc("prayer").collection("private").doc(user.uid).collection("messages");
 	   docRef.add({
               author: user.email,
 			  userId: user.uid,
 			  message: message,
-			  date: Date.now()
+			  date: dateNow
 
 			}) 
 			.then(function(doc) {
 				//alert("Document written with ID: " + doc.id);
-						  showItem(docRef, message, user.uid, doc.id);
+						  showItem(docRef, message, "private", dateNow, user.uid, doc.id);
 					      
 
 			})
@@ -165,19 +175,19 @@ limitations under the License.
 	  }
 
    function addToDatabasePublic(message){
-
+       var dateNow = Date.now();
 	   var docRef = db.collection("rooms").doc("prayer").collection("public");
 	   docRef.add({
 			  author: user.email,
 			  userId: user.uid,
 			  message: message,
-			  date: Date.now()
+			  date: dateNow
 
 			})
 			.then(function(doc) {
 				console.log("Document written with ID: " + doc.id);
 						  //alert("database");
-				          showItem(docRef, message, user.uid, doc.id);
+				          showItem(docRef, message, "public", dateNow, user.uid, doc.id);
 
 					      
 
@@ -218,6 +228,7 @@ limitations under the License.
           getPrivatePrayers();
 		  getPublicPrayers();
       }	  
+	  
 	  function getPublicPrayers(){
 	    var docRef = db.collection("rooms").doc("prayer").collection("public");
         var docRef1 = db.collection("rooms").doc("prayer").collection("public").orderBy("date", 'asc');
@@ -228,7 +239,8 @@ limitations under the License.
 				var message = doc.data().message;
 				var id = doc.id;
 				var userId = doc.data().userId;
-				showItem(docRef, message, userId, id);
+				var date = doc.data().date;
+				showItem(docRef, message, "public", date, userId, id);
 				
 			});
 		});
@@ -246,15 +258,16 @@ limitations under the License.
 				var message = doc.data().message;
 				var id = doc.id;
 				var userId = doc.data().userId;
-				showItem(docRef, message, userId, id);
+				var date = doc.data().date;
+				showItem(docRef, message, "private", date, userId, id);
 				
 			});
 		});
 
 	  
 	  }
-
-   function showItem(docRef, message, userId, id){
+   
+   function showItem(docRef, message, messageType, date, userId, id){
 
 		var elementDiv = document.createElement("DIV");
 		elementDiv.className = "prayerItem";
@@ -281,7 +294,12 @@ limitations under the License.
 			  }
 			
 		}
-		prayer_list_container.insertBefore(elementDiv, prayer_list_container.firstChild);
+		if (messageType=="private"){
+		   prayer_list_container.insertBefore(elementDiv, prayer_list_container.firstChild);
+		}		
+		if (messageType=="public"){
+		   prayer_list_container_public.insertBefore(elementDiv, prayer_list_container_public.firstChild);
+		}
    }
 
 	  function downloadFile(){
