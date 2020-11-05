@@ -40,6 +40,11 @@ limitations under the License.
   <script src="https://www.gstatic.com/firebasejs/7.21.1/firebase-storage.js"></script>
 
 
+<style>
+  .prayerItem{
+    backgroundColor = "blue";
+  }
+</style>
  
 </head>
 <body>
@@ -60,6 +65,8 @@ limitations under the License.
 <button onclick="downloadFile()">download</button>
 <button onclick="addToDatabase()">database</button>
 <button onclick="getPrayers()">list prayers</button>
+<button onclick="getPublicPrayers()">get public prayers</button>
+<button onclick="getPrivatePrayers()">get private prayers</button>
 
 <a id="url" href="">url</a>
 <div id="prayer_list">
@@ -78,7 +85,7 @@ limitations under the License.
 	  // Create a root reference
 	  var storageRef = firebase.storage().ref();
       var db = firebase.firestore();
-
+      getPublicPrayers();
 	  var user = JSON.parse(localStorage.getItem("user"));
 	  if(user==null){
 		  alert("please log in");
@@ -136,20 +143,17 @@ limitations under the License.
 
 	  function addToDatabase(message){
 	   alert(user.uid);
-	   db.collection("rooms").doc("prayer").collection("private").doc(user.uid).collection("messages").add({
+	   var docRef = db.collection("rooms").doc("prayer").collection("private").doc(user.uid).collection("messages");
+	   docRef.add({
               author: user.email,
 			  userId: user.uid,
 			  message: message,
 			  date: Date.now()
 
 			}) 
-			.then(function(event) {
-				console.log("Document written with ID: ", event);
-						  alert("database");
-						  var element = document.createElement("P");
-						  element.innerHTML = message;
-					      prayer_list_container.append(element);
-					      prayer.value = "";
+			.then(function(doc) {
+				alert("Document written with ID: " + doc.id);
+						  showItem(docRef, message, user.uid, doc.id);
 					      
 
 			})
@@ -162,20 +166,19 @@ limitations under the License.
 
    function addToDatabasePublic(message){
 
-	   db.collection("rooms").doc("prayer").collection("public").add({
+	   var docRef = db.collection("rooms").doc("prayer").collection("public");
+	   docRef.add({
 			  author: user.email,
 			  userId: user.uid,
 			  message: message,
 			  date: Date.now()
 
 			})
-			.then(function(event) {
-				console.log("Document written with ID: ", event);
+			.then(function(doc) {
+				console.log("Document written with ID: " + doc.id);
 						  alert("database");
-						  var element = document.createElement("P");
-						  element.innerHTML = message;
-					      prayer_list_container.append(element);
-					      prayer.value = "";
+				          showItem(docRef, message, user.uid, doc.id);
+
 					      
 
 			})
@@ -212,16 +215,92 @@ limitations under the License.
 	  }
 	  
 	  function getPrayers(){
-		  var prayer_list_container = document.getElementById("prayer_list");
 		  db.collection("prayers").get().then((querySnapshot) => {
 				querySnapshot.forEach((doc) => {
 					console.log(`${doc.id} => ${doc.data().message}`);
-					var element = document.createElement("P");
-					element.innerHTML = "another prayer";
-					prayer_list_container.append(element);
+					var message = doc.data().message;
+					var id = doc.data().id;
+					var userId = doc.data().userId;
+					showItem(docRef, message, userId, id);
 					
-				});
+					});
 			});
+	  }
+	  
+	  function getPublicPrayers(){
+        var docRef = db.collection("rooms").doc("prayer").collection("public");
+		docRef.get()
+		.then(querySnapshot => {
+			querySnapshot.forEach(doc => {
+				console.log(doc.id, " => ", doc.data());
+				var message = doc.data().message;
+				var id = doc.data().id;
+				var userId = doc.data().userId;
+				showItem(docRef, message, userId, id);
+				
+			});
+		});
+
+	  
+	  }
+
+   function showItem(docRef, message, userId, id){
+
+		var elementDiv = document.createElement("DIV");
+		elementDiv.className = "prayerItem";
+		elementDiv.setAttribute("id", id);
+		elementP = document.createElement("P");
+		elementP.innerHTML = message;
+		elementDiv.append(elementP);
+		elementDiv.onclick = function () {
+		var deleteItem = confirm("delete?");
+		
+		if(deleteItem){
+		      alert("userId: " + userId + " docId: " + id);
+              if (userId==user.uid){
+				 alert("deleted: " + id);
+				 docRef.doc(id).delete().then(function() {
+					console.log("Document successfully deleted!");
+				}).catch(function(error) {
+					console.error("Error removing document: ", error);
+				});
+				document.getElementById(id).remove();
+				};
+			  }else{
+			     alert("you are not the author");
+			  }
+			
+		}
+		prayer_list_container.append(elementDiv);
+   }
+
+	  function getPrivatePrayers(){
+	  		  var prayer_list_container = document.getElementById("prayer_list");
+
+		db.collection("rooms").doc("prayer").collection("private").doc(user.uid).collection("messages").get()
+		.then(querySnapshot => {
+			querySnapshot.forEach(doc => {
+				console.log(doc.id, " => ", doc.data());
+				var elementDiv = document.createElement("DIV");
+				elementDiv.className = "prayerItem";
+                elementDiv.setAttribute("id", doc.id);
+ elementP = document.createElement("P");
+				elementP.innerHTML = doc.data().message;
+				elementButton = document.createElement("BUTTON");
+				elementDiv.append(elementP);
+				elementDiv.append(elementButton);
+				elementDiv.onclick = function () {
+				    alert("test");
+				};
+				prayer_list_container.append(elementDiv);
+			});
+		});
+
+	  
+	  }
+	  
+	  function test(){
+	     alert("delete");
 	  }
 	  function downloadFile(){
 		  alert("download");
