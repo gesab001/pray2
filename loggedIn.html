@@ -134,6 +134,7 @@ limitations under the License.
 				   var ciphertext = CryptoJS.AES.encrypt(message, user.uid);
 				   items[x].innerHTML = ciphertext;
 				}
+				encrypted = true;
 			}
 	  }
 	  function submit(){
@@ -300,6 +301,11 @@ limitations under the License.
 	  
 	  }
    
+   var recurring = false;
+   function recurring(){
+      alert("recurring");
+   }
+   
    function showItem(docRef, message, messageType, date, userId, id){
 
 		var elementDiv = document.createElement("DIV");
@@ -338,6 +344,17 @@ limitations under the License.
 		elementButtonDelete.innerHTML = "delete";
 		elementDiv.append(elementButtonDelete);
 		
+		elementRecurring = document.createElement("BUTTON");
+		elementRecurring.innerHTML = "recurring";
+		elementDiv.append(elementRecurring);
+		
+		elementRecurring.onclick = function(){
+		    addToDatabase(message); 
+			setInterval(function(){ 
+			  addToDatabase(message); 
+			}, 60000);
+
+		}
 		elementButtonDelete.onclick = function () {
 			var deleteItem = confirm("delete?");
 			
