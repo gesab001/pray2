@@ -316,25 +316,47 @@ limitations under the License.
 
 		}
 		elementDiv.append(elementP);
-		elementDiv.onclick = function () {
-		var deleteItem = confirm("delete?");
+		elementButton = document.createElement("BUTTON");
+		elementButton.innerHTML = "publish";
 		
-		if(deleteItem){
-		      alert("userId: " + userId + " docId: " + id);
-              if (userId==user.uid){
-				 //alert("deleted: " + id);
-				 docRef.doc(id).delete().then(function() {
-					console.log("Document successfully deleted!");
-				}).catch(function(error) {
-					console.error("Error removing document: ", error);
-				});
-				document.getElementById(id).remove();
-				};
-			  }else{
-			     //alert("you are not the author");
-			  }
+		elementButton.onclick = function (){
+		   alert("publish");
+		   addToDatabasePublic(message);
+		};
+		
+		elementButtonAgain = document.createElement("BUTTON");
+		elementButtonAgain.innerHTML = "P.U.S.H.";
+		
+		elementButtonAgain.onclick = function (){
+		   alert("again");
+		   addToDatabase(message);
+		};
+		elementDiv.append(elementButtonAgain);
+
+		elementDiv.append(elementButton);
+		elementButtonDelete = document.createElement("BUTTON");
+		elementButtonDelete.innerHTML = "delete";
+		elementDiv.append(elementButtonDelete);
+		
+		elementButtonDelete.onclick = function () {
+			var deleteItem = confirm("delete?");
 			
-		}
+			if(deleteItem){
+				  //alert("userId: " + userId + " docId: " + id);
+				  if (userId==user.uid){
+					 //alert("deleted: " + id);
+					 docRef.doc(id).delete().then(function() {
+						console.log("Document successfully deleted!");
+					}).catch(function(error) {
+						console.error("Error removing document: ", error);
+					});
+					document.getElementById(id).remove();
+					};
+				  }else{
+					 //alert("you are not the author");
+				  }
+				
+			}
 		if (messageType=="private"){
 		   prayer_list_container.insertBefore(elementDiv, prayer_list_container.firstChild);
 		}		
@@ -342,7 +364,7 @@ limitations under the License.
 		   prayer_list_container_public.insertBefore(elementDiv, prayer_list_container_public.firstChild);
 		}
 		document.getElementById("newprayer").value = "";
-   }
+      }
 
 	  function downloadFile(){
 		  //alert("download");
