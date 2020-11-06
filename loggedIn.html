@@ -39,6 +39,9 @@ limitations under the License.
   <script src="https://www.gstatic.com/firebasejs/7.21.1/firebase-firestore.js"></script>
   <script src="https://www.gstatic.com/firebasejs/7.21.1/firebase-storage.js"></script>
 
+  <!--Cryptography-->
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+
 
 <style>
   .prayerItem{
@@ -71,6 +74,9 @@ limitations under the License.
 <a id="url" href="">url</a>
 
 <h1>Private</h1>
+<button onclick="dicipher()">dicipher</button>
+<button onclick="encrypt()">encrypt</button>
+
 <div id="prayer_list">
 
 </div>
@@ -104,6 +110,32 @@ limitations under the License.
 		  document.getElementById("userProfile").innerHTML = JSON.stringify(user);
           getPrayers();
 	  }
+	  var encrypted = true;
+	  function dicipher(	){
+		var password = prompt("please enter password");
+		if (password==user.uid){
+		    encrypted = false;
+			var items = document.getElementsByClassName("content");		
+			for (var x=0; x<items.length; x++){
+			   var bytes = CryptoJS.AES.decrypt(items[x].innerHTML.toString(), password);
+			   var message = bytes.toString(CryptoJS.enc.Utf8);
+			   items[x].innerHTML = message;
+			}
+		}else{
+		   alert("wrong password");
+		}
+	  }
+	  
+	  function encrypt(){
+	        if (encrypted==false){
+				var items = document.getElementsByClassName("content");		
+				for (var x=0; x<items.length; x++){
+				   var message = items[x].innerHTML.toString();
+				   var ciphertext = CryptoJS.AES.encrypt(message, user.uid);
+				   items[x].innerHTML = ciphertext;
+				}
+			}
+	  }
 	  function submit(){
 	      var messageType = document.getElementById("messageType").value;
 	      ////alert(messageType);
@@ -112,6 +144,7 @@ limitations under the License.
 		  var newprayer = prayer.value;
 		  if (newprayer.length>0){
 			  var message = address + ", " + newprayer + ", " + sign;
+               
 				  if (user!=null){
 						//alert(user.email);
 						if (messageType=="private"){
@@ -273,7 +306,15 @@ limitations under the License.
 		elementDiv.className = "prayerItem";
 		elementDiv.setAttribute("id", id);
 		elementP = document.createElement("P");
-		elementP.innerHTML = message + id;
+		elementP.className = "content";
+		if (encrypted){
+          var ciphertext = CryptoJS.AES.encrypt(message, user.uid);
+    		elementP.innerHTML = ciphertext;
+
+		}else{
+				elementP.innerHTML = message;
+
+		}
 		elementDiv.append(elementP);
 		elementDiv.onclick = function () {
 		var deleteItem = confirm("delete?");
@@ -300,6 +341,7 @@ limitations under the License.
 		if (messageType=="public"){
 		   prayer_list_container_public.insertBefore(elementDiv, prayer_list_container_public.firstChild);
 		}
+		document.getElementById("newprayer").value = "";
    }
 
 	  function downloadFile(){
