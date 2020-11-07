@@ -135,6 +135,8 @@ limitations under the License.
 			   var message = bytes.toString(CryptoJS.enc.Utf8);
 			   items[x].innerHTML = message;
 			}
+			setTimeout(function(){ encrypt(); }, 10000);
+
 		}else{
 		   alert("wrong password");
 		}
