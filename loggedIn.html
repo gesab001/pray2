@@ -306,6 +306,57 @@ limitations under the License.
       alert("recurring");
    }
    
+   
+   var periods = {
+  month: 30 * 24 * 60 * 60 * 1000,
+  week: 7 * 24 * 60 * 60 * 1000,
+  day: 24 * 60 * 60 * 1000,
+  hour: 60 * 60 * 1000,
+  minute: 60 * 1000,
+  second: 1000
+};
+
+function formatTime(timeCreated) {
+  var diff = Date.now() - timeCreated;
+
+  if (diff > periods.month) {
+    // it was at least a month ago
+    return Math.floor(diff / periods.month) + "month";
+  } else if (diff > periods.week) {
+    return Math.floor(diff / periods.week) + "week";
+  } else if (diff > periods.day) {
+    return Math.floor(diff / periods.day) + "day";
+  } else if (diff > periods.hour) {
+    return Math.floor(diff / periods.hour) + "hour";
+  } else if (diff > periods.minute) {
+	var quantity = "min ago";
+	if (diff >= (60*1000*2)){
+		quantity = "mins ago";
+	}  
+    return Math.floor(diff / periods.minute) + quantity;
+  }else if (diff > periods.second) {
+		quantity = " seconds ago"; 
+        return Math.floor(diff / periods.second) + quantity;
+  }
+  return "Just now";
+}
+
+function updateDatabase(docRef, message, messageType, userId, id){
+	var dateNow = Date.now();
+	docRef.doc(id)
+				  .update({
+					date:  dateNow,
+				  })
+				  .then(() => {
+					console.log("Document updated"); // Document updated
+				  })
+				  .catch((error) => {
+					console.error("Error updating doc", error);
+				  });
+				       	   document.getElementById(id).remove();
+
+				  showItem(docRef, message, messageType, dateNow, userId, id);
+}
    function showItem(docRef, message, messageType, date, userId, id){
 
 		var elementDiv = document.createElement("DIV");
@@ -313,7 +364,7 @@ limitations under the License.
 		elementDiv.setAttribute("id", id);
 		elementDate = document.createElement("P");
 		elementDate.setAttribute("id", "date-"+id);
-		elementDate.innerHTML = Date(date).toString();;
+		elementDate.innerHTML = formatTime(date);
 		elementDiv.append(elementDate);
 		elementP = document.createElement("P");
 		elementP.className = "content";
@@ -337,10 +388,7 @@ limitations under the License.
 		elementButtonAgain = document.createElement("BUTTON");
 		elementButtonAgain.innerHTML = "P.U.S.H.";
 		
-		elementButtonAgain.onclick = function (){
-		   alert("again");
-		   addToDatabase(message);
-		};
+	
 		elementDiv.append(elementButtonAgain);
 
 		elementDiv.append(elementButton);
@@ -351,7 +399,7 @@ limitations under the License.
 		elementRecurring = document.createElement("BUTTON");
 		elementRecurring.innerHTML = "recurring";
 		elementDiv.append(elementRecurring);
-		
+
 
 		elementButtonDelete.onclick = function () {
 			var deleteItem = confirm("delete?");
@@ -376,8 +424,8 @@ limitations under the License.
 			elementRecurring.onclick = function(){
 		    //addToDatabase(message); 
 			console.log("updating "  + id );
-			var dateNow = Date.now();
-            document.getElementById("date-"+id).innerHTML = Date(dateNow).toString();
+			//var dateNow = Date.now();
+           // document.getElementById("date-"+id).innerHTML = Date(dateNow).toString();
   		 
 
 			setInterval(function(){ 
@@ -391,7 +439,7 @@ limitations under the License.
 				  .catch((error) => {
 					console.error("Error updating doc", error);
 				  });
-                 document.getElementById("date-"+id).innerHTML = Date(dateNow).toString();
+                // document.getElementById("date-"+id).innerHTML = Date(dateNow).toString();
 
 
                 				  
@@ -405,6 +453,14 @@ limitations under the License.
 		   prayer_list_container_public.insertBefore(elementDiv, prayer_list_container_public.firstChild);
 		}
 		document.getElementById("newprayer").value = "";
+		var myInterval = setInterval(function(){ document.getElementById("date-"+id).innerHTML = formatTime(date); }, 1000);
+        
+        elementButtonAgain.onclick = function (){
+		   alert("again");
+		   clearInterval(myInterval);
+		   updateDatabase(docRef, message, messageType, userId, id);
+
+		};
       }
 
 	  function downloadFile(){
