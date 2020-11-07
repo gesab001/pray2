@@ -311,6 +311,10 @@ limitations under the License.
 		var elementDiv = document.createElement("DIV");
 		elementDiv.className = "prayerItem";
 		elementDiv.setAttribute("id", id);
+		elementDate = document.createElement("P");
+		elementDate.setAttribute("id", "date-"+id);
+		elementDate.innerHTML = Date(date).toString();;
+		elementDiv.append(elementDate);
 		elementP = document.createElement("P");
 		elementP.className = "content";
 		if (encrypted){
@@ -348,13 +352,7 @@ limitations under the License.
 		elementRecurring.innerHTML = "recurring";
 		elementDiv.append(elementRecurring);
 		
-		elementRecurring.onclick = function(){
-		    addToDatabase(message); 
-			setInterval(function(){ 
-			  addToDatabase(message); 
-			}, 60000);
 
-		}
 		elementButtonDelete.onclick = function () {
 			var deleteItem = confirm("delete?");
 			
@@ -374,6 +372,32 @@ limitations under the License.
 				  }
 				
 			}
+			
+			elementRecurring.onclick = function(){
+		    //addToDatabase(message); 
+			console.log("updating "  + id );
+			var dateNow = Date.now();
+            document.getElementById("date-"+id).innerHTML = Date(dateNow).toString();
+  		 
+
+			setInterval(function(){ 
+				docRef.doc(id)
+				  .update({
+					date:  dateNow,
+				  })
+				  .then(() => {
+					console.log("Document updated"); // Document updated
+				  })
+				  .catch((error) => {
+					console.error("Error updating doc", error);
+				  });
+                 document.getElementById("date-"+id).innerHTML = Date(dateNow).toString();
+
+
+                				  
+			}, 60000);
+
+		}		
 		if (messageType=="private"){
 		   prayer_list_container.insertBefore(elementDiv, prayer_list_container.firstChild);
 		}		
