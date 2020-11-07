@@ -192,12 +192,13 @@ limitations under the License.
               author: user.email,
 			  userId: user.uid,
 			  message: message,
-			  date: dateNow
+			  date: dateNow,
+			  recurring: false
 
 			}) 
 			.then(function(doc) {
 				//alert("Document written with ID: " + doc.id);
-						  showItem(docRef, message, "private", dateNow, user.uid, doc.id);
+						  showItem(docRef, message, "private", dateNow, user.uid, doc.id, false);
 					      
 
 			})
@@ -211,17 +212,19 @@ limitations under the License.
    function addToDatabasePublic(message){
        var dateNow = Date.now();
 	   var docRef = db.collection("rooms").doc("prayer").collection("public");
+  	   var recurring = false;
 	   docRef.add({
 			  author: user.email,
 			  userId: user.uid,
 			  message: message,
-			  date: dateNow
+			  date: dateNow,
+			  recurring: false
 
 			})
 			.then(function(doc) {
 				console.log("Document written with ID: " + doc.id);
 						  //alert("database");
-				          showItem(docRef, message, "public", dateNow, user.uid, doc.id);
+				          showItem(docRef, message, "public", dateNow,  user.uid, doc.id, false);
 
 					      
 
@@ -274,7 +277,8 @@ limitations under the License.
 				var id = doc.id;
 				var userId = doc.data().userId;
 				var date = doc.data().date;
-				showItem(docRef, message, "public", date, userId, id);
+				var recurring = doc.data().recurring;
+				showItem(docRef, message, "public", date, userId, id, recurring);
 				
 			});
 		});
@@ -293,18 +297,14 @@ limitations under the License.
 				var id = doc.id;
 				var userId = doc.data().userId;
 				var date = doc.data().date;
-				showItem(docRef, message, "private", date, userId, id);
+				var recurring = doc.data().recurring;
+				showItem(docRef, message, "private", date, userId, id, recurring);
 				
 			});
 		});
 
 	  
 	  }
-   
-   var recurring = false;
-   function recurring(){
-      alert("recurring");
-   }
    
    
    var periods = {
@@ -341,7 +341,7 @@ function formatTime(timeCreated) {
   return "Just now";
 }
 
-function updateDatabase(docRef, message, messageType, userId, id){
+function updateDatabase(docRef, message, messageType, userId, id, recurring){
 	var dateNow = Date.now();
 	docRef.doc(id)
 				  .update({
@@ -355,11 +355,24 @@ function updateDatabase(docRef, message, messageType, userId, id){
 				  });
 	       	   document.getElementById(id).remove();
 
-				  showItem(docRef, message, messageType, dateNow, userId, id);
+				  showItem(docRef, message, messageType, dateNow, userId, id, recurring);
 }
 
+function updateDatabaseRecurring(docRef, id){
+	docRef.doc(id)
+				  .update({
+					recurring:  true,
+				  })
+				  .then(() => {
+					console.log("Document updated to recurring"); // Document updated
+				  })
+				  .catch((error) => {
+					console.error("Error updating doc recurring", error);
+				  });
 
-   function showItem(docRef, message, messageType, date, userId, id){
+}
+
+   function showItem(docRef, message, messageType, date, userId, id, recurring){
 
 		var elementDiv = document.createElement("DIV");
 		elementDiv.className = "prayerItem";
@@ -401,6 +414,7 @@ function updateDatabase(docRef, message, messageType, userId, id){
 		
 		elementRecurring = document.createElement("BUTTON");
 		elementRecurring.innerHTML = "recurring";
+		elementRecurring.setAttribute("id", "button-recurring-"+id);
 		elementDiv.append(elementRecurring);
 
 
@@ -436,7 +450,7 @@ function updateDatabase(docRef, message, messageType, userId, id){
         elementButtonAgain.onclick = function (){
 
 		   clearInterval(timer);
-		   updateDatabase(docRef, message, messageType, userId, id);
+		   updateDatabase(docRef, message, messageType, userId, id, recurring);
 
 		};
 		
@@ -444,6 +458,7 @@ function updateDatabase(docRef, message, messageType, userId, id){
 			elementRecurring.onclick = function(){
 		    //addToDatabase(message); 
 				console.log("updating "  + id );
+				updateDatabaseRecurring(docRef, id)
 				//var dateNow = Date.now();
 			   // document.getElementById("date-"+id).innerHTML = Date(dateNow).toString();
                 document.getElementById("button-"+id).click();
@@ -453,6 +468,10 @@ function updateDatabase(docRef, message, messageType, userId, id){
 			 
 
 			};		
+			
+			if (recurring){
+			    document.getElementById("button-recurring-"+id).click();
+			}
       }
 
 	  function downloadFile(){
