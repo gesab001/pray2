@@ -353,10 +353,12 @@ function updateDatabase(docRef, message, messageType, userId, id){
 				  .catch((error) => {
 					console.error("Error updating doc", error);
 				  });
-				       	   document.getElementById(id).remove();
+	       	   document.getElementById(id).remove();
 
 				  showItem(docRef, message, messageType, dateNow, userId, id);
 }
+
+
    function showItem(docRef, message, messageType, date, userId, id){
 
 		var elementDiv = document.createElement("DIV");
@@ -387,6 +389,7 @@ function updateDatabase(docRef, message, messageType, userId, id){
 		
 		elementButtonAgain = document.createElement("BUTTON");
 		elementButtonAgain.innerHTML = "P.U.S.H.";
+		elementButtonAgain.setAttribute("id", "button-"+id);
 		
 	
 		elementDiv.append(elementButtonAgain);
@@ -420,32 +423,7 @@ function updateDatabase(docRef, message, messageType, userId, id){
 				  }
 				
 			}
-			
-			elementRecurring.onclick = function(){
-		    //addToDatabase(message); 
-			console.log("updating "  + id );
-			//var dateNow = Date.now();
-           // document.getElementById("date-"+id).innerHTML = Date(dateNow).toString();
-  		 
-
-			setInterval(function(){ 
-				docRef.doc(id)
-				  .update({
-					date:  dateNow,
-				  })
-				  .then(() => {
-					console.log("Document updated"); // Document updated
-				  })
-				  .catch((error) => {
-					console.error("Error updating doc", error);
-				  });
-                // document.getElementById("date-"+id).innerHTML = Date(dateNow).toString();
-
-
-                				  
-			}, 60000);
-
-		}		
+		
 		if (messageType=="private"){
 		   prayer_list_container.insertBefore(elementDiv, prayer_list_container.firstChild);
 		}		
@@ -453,14 +431,28 @@ function updateDatabase(docRef, message, messageType, userId, id){
 		   prayer_list_container_public.insertBefore(elementDiv, prayer_list_container_public.firstChild);
 		}
 		document.getElementById("newprayer").value = "";
-		var myInterval = setInterval(function(){ document.getElementById("date-"+id).innerHTML = formatTime(date); }, 1000);
+		var timer = setInterval(function(){ document.getElementById("date-"+id).innerHTML = formatTime(date); }, 1000);
         
         elementButtonAgain.onclick = function (){
-		   alert("again");
-		   clearInterval(myInterval);
+
+		   clearInterval(timer);
 		   updateDatabase(docRef, message, messageType, userId, id);
 
 		};
+		
+
+			elementRecurring.onclick = function(){
+		    //addToDatabase(message); 
+				console.log("updating "  + id );
+				//var dateNow = Date.now();
+			   // document.getElementById("date-"+id).innerHTML = Date(dateNow).toString();
+                document.getElementById("button-"+id).click();
+				setInterval(function(){                document.getElementById("button-"+id).click();
+;}, 60000);
+				
+			 
+
+			};		
       }
 
 	  function downloadFile(){
