@@ -92,7 +92,11 @@ limitations under the License.
  <script type="text/javascript">
 	 var prayer_list_container = document.getElementById("prayer_list");
 	 var prayer_list_container_public = document.getElementById("prayer_list_public");
-
+     var cipherPassword = localStorage.getItem("cipherPassword");
+	 if(cipherPassword==null){
+	     cipherPassword = prompt("create a cipher password");
+		 localStorage.setItem("cipherPassword", cipherPassword);
+	 }
 	 document.getElementById("userinfo").innerHTML = "test";
      var prayer = document.getElementById("newprayer");
 	 var prayerItems = [];
@@ -112,8 +116,18 @@ limitations under the License.
 	  }
 	  var encrypted = true;
 	  function dicipher(	){
-		var password = prompt("please enter password");
-		if (password==user.uid){
+	    var password;
+	    //var getPassword = localStorage.getItem("decipherpassword");
+		//alert(getPassword);
+		//if (getPassword==null){
+		 //   alert("no password");
+     	//	password = prompt("please enter password");
+		//	getPassword = localStorage.setItem("decipherpassword", password);
+		//}else{
+     		password = prompt("please enter password");
+
+		//}
+		if (password==cipherPassword){
 		    encrypted = false;
 			var items = document.getElementsByClassName("content");		
 			for (var x=0; x<items.length; x++){
@@ -131,7 +145,7 @@ limitations under the License.
 				var items = document.getElementsByClassName("content");		
 				for (var x=0; x<items.length; x++){
 				   var message = items[x].innerHTML.toString();
-				   var ciphertext = CryptoJS.AES.encrypt(message, user.uid);
+				   var ciphertext = CryptoJS.AES.encrypt(message, cipherPassword);
 				   items[x].innerHTML = ciphertext;
 				}
 				encrypted = true;
@@ -384,7 +398,7 @@ function updateDatabaseRecurring(docRef, id){
 		elementP = document.createElement("P");
 		elementP.className = "content";
 		if (encrypted){
-          var ciphertext = CryptoJS.AES.encrypt(message, user.uid);
+          var ciphertext = CryptoJS.AES.encrypt(message, cipherPassword);
     		elementP.innerHTML = ciphertext;
 
 		}else{
