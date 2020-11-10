@@ -201,7 +201,7 @@ if ('serviceWorker' in navigator) {
           getPrayers();
 	  }
 	  var encrypted = true;
-	  function dicipher(	){
+	  function dicipher(){
 	    var password;
 	    //var getPassword = localStorage.getItem("decipherpassword");
 		//alert(getPassword);
@@ -213,6 +213,7 @@ if ('serviceWorker' in navigator) {
      		password = prompt("please enter password");
 
 		//}
+		var timeoutVar;
 		if (password==cipherPassword){
 		    encrypted = false;
 			var items = document.getElementsByClassName("content");		
@@ -222,7 +223,9 @@ if ('serviceWorker' in navigator) {
 			   items[x].innerHTML = message;
 			   items[x].visibility = "visible";
 			}
-			setTimeout(function(){ encrypt(); }, 60000);
+			var timer = prompt("how many minutes?");
+			timer = timer * 60 * 1000;
+			timeoutVar = setTimeout(function(){ encrypt(); }, timer);
 
 		}else{
 		   alert("wrong password");
@@ -238,6 +241,7 @@ if ('serviceWorker' in navigator) {
 				   items[x].innerHTML = ciphertext;
 				}
 				encrypted = true;
+				clearTimeOut(timeoutVar);
 			}
 	  }
 	  function submit(){
