@@ -88,6 +88,11 @@ limitations under the License.
 
 
 }
+
+.content{
+  color: blue;
+  word-wrap: break-word;
+}
 </style>
  
 </head>
@@ -184,8 +189,9 @@ limitations under the License.
 			   var bytes = CryptoJS.AES.decrypt(items[x].innerHTML.toString(), password);
 			   var message = bytes.toString(CryptoJS.enc.Utf8);
 			   items[x].innerHTML = message;
+			   items[x].visibility = "visible";
 			}
-			setTimeout(function(){ encrypt(); }, 10000);
+			setTimeout(function(){ encrypt(); }, 60000);
 
 		}else{
 		   alert("wrong password");
@@ -234,15 +240,18 @@ limitations under the License.
 
 	  }
 	  
-	  
+	  var linenumber = 0 ;
 	  function increaseTextArea(event){
-	  
+        var newline = x.value.substr(0, x.selectionStart).split("\n").length;
 	    var x = document.getElementById("newprayer");
 		if (event.key=="Enter"){
 		      x.rows = x.rows + 1;
         }
 		if (event.key=="Backspace"){
 		      x.rows = x.rows - 1;
+			  console.log("linenumber: " + linenumber);
+			  console.log("newline: " + newline);
+			  linenumber = newline;
         }
         
 	  }
@@ -465,9 +474,11 @@ function updateDatabaseRecurring(docRef, id){
 		if (encrypted){
           var ciphertext = CryptoJS.AES.encrypt(message, cipherPassword);
     		elementP.innerHTML = ciphertext;
+			elementP.style.visibility = "visible";
 
 		}else{
 				elementP.innerHTML = message;
+				elementP.style.display = "visible";
 
 		}
 		elementDiv.append(elementP);
