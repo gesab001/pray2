@@ -207,6 +207,8 @@ if ('serviceWorker' in navigator) {
           getPrayers();
 	  }
 	  var encrypted = true;
+	  var timeoutVar;
+      var items;
 	  function dicipher(){
 	    var password;
 	    //var getPassword = localStorage.getItem("decipherpassword");
@@ -219,10 +221,10 @@ if ('serviceWorker' in navigator) {
      		password = prompt("please enter password");
 
 		//}
-		var timeoutVar;
 		if (password==cipherPassword){
 		    encrypted = false;
-			var items = document.getElementsByClassName("content-private");		
+			items = document.getElementsByClassName("content-private");		
+			console
 			for (var x=0; x<items.length; x++){
 			   var encryptId = items[x].id;
 			   var encryptedMessage = encryptedList[encryptId];
@@ -242,14 +244,14 @@ if ('serviceWorker' in navigator) {
 	  
 	  function encrypt(){
 	        if (encrypted==false){
-				var items = document.getElementsByClassName("content-private");		
+                console.log(items.length);				
 				for (var x=0; x<items.length; x++){
-				   var message = items[x].innerHTML.toString();
-				   var ciphertext = CryptoJS.AES.encrypt(message, cipherPassword);
 				   items[x].innerHTML = "encrypted";
+	   			   items[x].visibility = "visible";
+
 				}
 				encrypted = true;
-				clearTimeOut(timeoutVar);
+				clearTimeout(timeoutVar);
 			}
 	  }
 	  function submit(){
@@ -257,10 +259,10 @@ if ('serviceWorker' in navigator) {
 	      ////alert(messageType);
 		  var address = document.getElementById("address").innerHTML;
   		  var sign = document.getElementById("sign").innerHTML;
-		  var newprayer = prayer.value;
+		  var newprayer = prayer.innerHTML;
 		  if (newprayer.length>0){
 			  var message = address + ", " + newprayer + ", " + sign;
-               
+              prayer.innerHTML = ""; 
 				  if (user!=null){
 						//alert(user.email);
 						if (messageType=="private"){
@@ -363,7 +365,7 @@ if ('serviceWorker' in navigator) {
 			  userId: user.uid,
 			  message: message,
 			  date: dateNow,
-			  recurring: false
+			  recurring: false	
 
 			})
 			.then(function(doc) {
@@ -498,9 +500,17 @@ function updateDatabase(docRef, message, messageType, userId, id, recurring){
 				  .catch((error) => {
 					console.error("Error updating doc", error);
 				  });
-	       	   document.getElementById(id).remove();
+	       	   //document.getElementById(id).remove();
+              // console.log(message);
+			  // console.log(messageType);
+			  // console.log(userId);
+			  // console.log(id);
+			  // console.log(recurring);
+			  document.getElementById(id).remove();
 
-				  showItem(docRef, message, messageType, dateNow, userId, id, recurring);
+		     showItem(docRef, message, messageType, dateNow, userId, id, recurring);
+			   			  console.log(document.getElementById(id));
+
 }
 
 function updateDatabaseRecurring(docRef, id){
@@ -528,9 +538,10 @@ function updateDatabaseRecurring(docRef, id){
 		elementDiv.append(elementDate);
 		elementP = document.createElement("P");
 		elementP.setAttribute("id", "content-"+id);
-    	elementP.className = "content";
-		if (encrypted && messageType=="private"){
-  	   	  elementP.className = "content-private";
+		elementP.className = "content-private";
+		console.log("messageType: " + messageType);
+
+		if (encrypted){
           var ciphertext = CryptoJS.AES.encrypt(message, cipherPassword);
 		  encryptedList["content-"+id] = ciphertext;
     		elementP.innerHTML = "encrypted";
@@ -541,6 +552,12 @@ function updateDatabaseRecurring(docRef, id){
 				elementP.style.display = "visible";
 
 		}
+		if(messageType=="public"){
+	       elementP.className = "content";
+		   				elementP.innerHTML = message;
+				elementP.style.display = "visible";
+		}
+		
 		elementDiv.append(elementP);
 		elementButton = document.createElement("BUTTON");
 		elementButton.innerHTML = "publish";
@@ -594,14 +611,13 @@ function updateDatabaseRecurring(docRef, id){
 		if (messageType=="public"){
 		   prayer_list_container_public.insertBefore(elementDiv, prayer_list_container_public.firstChild);
 		}
-		document.getElementById("newprayer").value = "";
+		document.getElementById("newprayer").innerHTML = "";
 		var timer = setInterval(function(){ document.getElementById("date-"+id).innerHTML = formatTime(date); }, 1000);
         
         elementButtonAgain.onclick = function (){
 
 		   clearInterval(timer);
 		   updateDatabase(docRef, message, messageType, userId, id, recurring);
-
 		};
 		
 
