@@ -217,7 +217,7 @@ if ('serviceWorker' in navigator) {
 		var timeoutVar;
 		if (password==cipherPassword){
 		    encrypted = false;
-			var items = document.getElementsByClassName("content");		
+			var items = document.getElementsByClassName("content-private");		
 			for (var x=0; x<items.length; x++){
 			   var encryptId = items[x].id;
 			   var encryptedMessage = encryptedList[encryptId];
@@ -237,7 +237,7 @@ if ('serviceWorker' in navigator) {
 	  
 	  function encrypt(){
 	        if (encrypted==false){
-				var items = document.getElementsByClassName("content");		
+				var items = document.getElementsByClassName("content-private");		
 				for (var x=0; x<items.length; x++){
 				   var message = items[x].innerHTML.toString();
 				   var ciphertext = CryptoJS.AES.encrypt(message, cipherPassword);
@@ -511,8 +511,9 @@ function updateDatabaseRecurring(docRef, id){
 		elementDiv.append(elementDate);
 		elementP = document.createElement("P");
 		elementP.setAttribute("id", "content-"+id);
-		elementP.className = "content";
-		if (encrypted){
+    	elementP.className = "content";
+		if (encrypted && messageType=="private"){
+  	   	  elementP.className = "content-private";
           var ciphertext = CryptoJS.AES.encrypt(message, cipherPassword);
 		  encryptedList["content-"+id] = ciphertext;
     		elementP.innerHTML = "encrypted";
