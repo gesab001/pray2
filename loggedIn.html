@@ -278,22 +278,34 @@ if ('serviceWorker' in navigator) {
 
 	  }
 	  
-	  var linenumber = 0 ;
+	  var totallines = 1 ;
 	  
 	  function increaseTextArea(event){
-	  alert("test");
-        var newline = x.value.substr(0, x.selectionStart).split("\n").length;
-	    var x = document.getElementById("newprayer");
+	   var x = document.getElementById("newprayer");
+
+
+        var newline; 
 		if (event.key=="Enter"){
-		      x.rows = x.rows + 1;
+		  totallines = totallines + 1;
+	      x.rows = totallines;
+			 
+		  newline = totallines;	  
+		   console.log("newline: " + newline);
+			  console.log("totallines: " + totallines);
+
         }
 		if (event.key=="Backspace"){
-		      x.rows = x.rows - 1;
-			  console.log("linenumber: " + linenumber);
+		   newline = x.value.substr(0, x.selectionStart).split("\n").length;
+		  //    x.rows = x.rows - 1;
+			  //console.log("linenumber: " + linenumber);
 			  console.log("newline: " + newline);
-			  linenumber = newline;
-        }
-        
+			  if (totallines!=newline){
+				totallines = totallines - 1;
+				x.rows = totallines;
+				console.log("newline: " + newline);
+				console.log("totallines:"+totallines);
+			  }
+        }       
 	  }
 	  
 	  function uploadFile(item){
