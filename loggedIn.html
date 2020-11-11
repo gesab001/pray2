@@ -111,10 +111,14 @@ if ('serviceWorker' in navigator) {
 #newprayer{
   width: 100%;
 
+
+
 }
 
 #newprayer-container{
   width: 90%;
+  border-style:solid;
+
 
 
 }
@@ -139,7 +143,8 @@ if ('serviceWorker' in navigator) {
 <div id="request-form">
 	<div><h1 id="address">Dear heavenly Father</h1></div>
 
-	<div id="newprayer-container"><textarea id="newprayer" rows="1" onkeydown="increaseTextArea(event)"></textarea>
+	<!-- <div id="newprayer-container"><textarea id="newprayer" rows="1" onkeydown="increaseTextArea(event)"></textarea> -->
+	<div id="newprayer-container"><div id="newprayer" contentEditable="true"></div>
 
 </div>
 	<div><h1 id="sign">in Jesus' name, Amen.</h1></div>
