@@ -180,6 +180,7 @@ if ('serviceWorker' in navigator) {
 	 var prayer_list_container = document.getElementById("prayer_list");
 	 var prayer_list_container_public = document.getElementById("prayer_list_public");
      var cipherPassword = localStorage.getItem("cipherPassword");
+	 var encryptedList = {};
 	 if(cipherPassword==null){
 	     cipherPassword = prompt("create a cipher password");
 		 localStorage.setItem("cipherPassword", cipherPassword);
@@ -218,7 +219,9 @@ if ('serviceWorker' in navigator) {
 		    encrypted = false;
 			var items = document.getElementsByClassName("content");		
 			for (var x=0; x<items.length; x++){
-			   var bytes = CryptoJS.AES.decrypt(items[x].innerHTML.toString(), password);
+			   var encryptId = items[x].id;
+			   var encryptedMessage = encryptedList[encryptId];
+			   var bytes = CryptoJS.AES.decrypt(encryptedMessage, password);
 			   var message = bytes.toString(CryptoJS.enc.Utf8);
 			   items[x].innerHTML = message;
 			   items[x].visibility = "visible";
@@ -238,7 +241,7 @@ if ('serviceWorker' in navigator) {
 				for (var x=0; x<items.length; x++){
 				   var message = items[x].innerHTML.toString();
 				   var ciphertext = CryptoJS.AES.encrypt(message, cipherPassword);
-				   items[x].innerHTML = ciphertext;
+				   items[x].innerHTML = "encrypted";
 				}
 				encrypted = true;
 				clearTimeOut(timeoutVar);
@@ -276,7 +279,9 @@ if ('serviceWorker' in navigator) {
 	  }
 	  
 	  var linenumber = 0 ;
+	  
 	  function increaseTextArea(event){
+	  alert("test");
         var newline = x.value.substr(0, x.selectionStart).split("\n").length;
 	    var x = document.getElementById("newprayer");
 		if (event.key=="Enter"){
@@ -494,7 +499,7 @@ function updateDatabaseRecurring(docRef, id){
 				  });
 
 }
-
+    
    function showItem(docRef, message, messageType, date, userId, id, recurring){
 
 		var elementDiv = document.createElement("DIV");
@@ -505,10 +510,12 @@ function updateDatabaseRecurring(docRef, id){
 		elementDate.innerHTML = formatTime(date);
 		elementDiv.append(elementDate);
 		elementP = document.createElement("P");
+		elementP.setAttribute("id", "content-"+id);
 		elementP.className = "content";
 		if (encrypted){
           var ciphertext = CryptoJS.AES.encrypt(message, cipherPassword);
-    		elementP.innerHTML = ciphertext;
+		  encryptedList["content-"+id] = ciphertext;
+    		elementP.innerHTML = "encrypted";
 			elementP.style.visibility = "visible";
 
 		}else{
