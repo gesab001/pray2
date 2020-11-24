@@ -415,7 +415,7 @@ if ('serviceWorker' in navigator) {
 	  
 	  function getPublicPrayers(){
 	    var docRef = db.collection("rooms").doc("prayer").collection("public");
-        var docRef1 = db.collection("rooms").doc("prayer").collection("public").orderBy("date", 'asc');
+        var docRef1 = db.collection("rooms").doc("prayer").collection("public").orderBy("date", 'asc').limit(5);
 		docRef1.get()
 		.then(querySnapshot => {
 			querySnapshot.forEach(doc => {
@@ -435,7 +435,7 @@ if ('serviceWorker' in navigator) {
 
 	  function getPrivatePrayers(){
 	    var docRef = db.collection("rooms").doc("prayer").collection("private").doc(user.uid).collection("messages");
-        var docRef1 = db.collection("rooms").doc("prayer").collection("private").doc(user.uid).collection("messages").orderBy("date", 'asc');
+        var docRef1 = db.collection("rooms").doc("prayer").collection("private").doc(user.uid).collection("messages").orderBy("date", 'asc').limit(5);
 		docRef1.get()
 		.then(querySnapshot => {
 			querySnapshot.forEach(doc => {
