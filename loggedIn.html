@@ -415,7 +415,7 @@ if ('serviceWorker' in navigator) {
 	  
 	  function getPublicPrayers(){
 	    var docRef = db.collection("rooms").doc("prayer").collection("public");
-        var docRef1 = db.collection("rooms").doc("prayer").collection("public").orderBy("date", 'asc').limit(5);
+        var docRef1 = db.collection("rooms").doc("prayer").collection("public").orderBy("date", 'desc').limit(5);
 		docRef1.get()
 		.then(querySnapshot => {
 			querySnapshot.forEach(doc => {
